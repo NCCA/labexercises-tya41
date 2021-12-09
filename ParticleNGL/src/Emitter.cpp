@@ -4,10 +4,14 @@
 #include <fstream>
 #include <sstream>
 #include <fmt/format.h>
+#include <ngl/Transformation.h>
+#include <ngl/ShaderLib.h>
+#include <ngl/VAOPrimitives.h>
+#include <ngl/Util.h>
 
 // implementation in .cpp files
 
-Emitter::Emitter(size_t _numParticles, const Vec3 &_emitDir)
+Emitter::Emitter(size_t _numParticles, const ngl::Vec3 &_emitDir)
 {
     m_emitDir=_emitDir;
     m_particles.resize(_numParticles);
@@ -21,8 +25,9 @@ void Emitter::resetParticle(Particle &io_p)
 {
     if(Random::randomPositiveFloat(500) > 450)
     {
+        io_p.pos = ngl::Vec3::zero();
         io_p.dir = m_emitDir * Random::randomPositiveFloat() + Random::randomVectorOnSphere() * m_spread;
-        io_p.dir.y = std::abs(io_p.dir.y);
+        io_p.dir.m_y = std::abs(io_p.dir.m_y);
         io_p.colour = Random::randomPositiveVec3();
         io_p.maxLife = static_cast<int>(Random::randomPositiveFloat(5000)+100);
         io_p.life = 0;
@@ -30,8 +35,8 @@ void Emitter::resetParticle(Particle &io_p)
     }
     else
     {
-        io_p.dir = {0,0,0};
-        io_p.pos = {0,0,0};
+        io_p.dir.set(0.0f,0.0f,0.0f);
+        io_p.pos.set(-1000,-10000,-100000);
         io_p.maxLife = 100;
         io_p.life = 0;
     }
@@ -50,14 +55,14 @@ size_t Emitter::numParticles() const
 void Emitter::update()
 {
     float dt=0.1f;
-    const Vec3 gravity(0.0f, -9.81f, 0.0f);
+    const ngl::Vec3 gravity(0.0f, -9.81f, 0.0f);
     // & --> reference m_particles, actually change the value of original m_particles, not the local copies
     for(auto &p : m_particles)
     {
         p.dir += gravity*dt*0.5f;
         p.pos += p.dir * dt;
         p.size += Random::randomPositiveFloat(0.05f);
-        if(++p.life >= p.maxLife || p.pos.y <= 0.0f)
+        if(++p.life >= p.maxLife || p.pos.m_y <= 0.0f)
         {
             resetParticle(p);
         }
@@ -66,10 +71,17 @@ void Emitter::update()
 
 void Emitter::render() const
 {
+    auto view = ngl::lookAt({5,15,25},{0,0,0},{0,1,0});
+    auto project = ngl::perspective(45.0f, 1.0f, 0.1f, 200.0f);
+    ngl::Mat4 model;
     for(auto p : m_particles)
     {
-        std::cout << p.pos.x << ", " << p.pos.y << ", " << p.pos.z << ' ';
-        std::cout << p.dir.x << ", " << p.dir.y << ", " << p.dir.z << "\n";
+        //std::cout << p.pos.m_x << ", " << p.pos.m_y << ", " << p.pos.m_z << ' ';
+        //std::cout << p.dir.m_x << ", " << p.dir.m_y << ", " << p.dir.m_z << "\n";
+        model.translate(p.pos.m_x, p.pos.m_y, p.pos.m_z);
+        ngl::ShaderLib::setUniform("MVP", project*view*model);
+        ngl::ShaderLib::setUniform("colour", p.colour.m_r, p.colour.m_g, p.colour.m_b);
+        ngl::VAOPrimitives::draw("sphere");
     }
 }
 
@@ -87,8 +99,8 @@ void Emitter::saveFrame(int _frameNo) const
     ss << "pscale 1 float 1 \n";
     for(auto p : m_particles)
     {
-        ss << p.pos.x << ' ' << p.pos.y << ' ' << p.pos.z << " 1 (";
-        ss << p.colour.x << ' ' << p.colour.y << ' ' << p.colour.z << ' ';
+        ss << p.pos.m_x << ' ' << p.pos.m_y << ' ' << p.pos.m_z << " 1 (";
+        ss << p.colour.m_x << ' ' << p.colour.m_y << ' ' << p.colour.m_z << ' ';
         ss << p.size << ")\n";
     }
     ss << "PrimitiveAttrib \n";
