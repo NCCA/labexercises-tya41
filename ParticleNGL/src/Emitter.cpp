@@ -8,6 +8,7 @@
 #include <ngl/ShaderLib.h>
 #include <ngl/VAOPrimitives.h>
 #include <ngl/Util.h>
+#include <ngl/VAOFactory.h>
 
 // implementation in .cpp files
 
@@ -19,6 +20,7 @@ Emitter::Emitter(size_t _numParticles, const ngl::Vec3 &_emitDir)
     {
         resetParticle(p);
     }
+    m_vao = ngl::VAOFactory::createVAO(ngl::simpleVAO, GL_POINTS);
 }
 
 void Emitter::resetParticle(Particle &io_p)
@@ -61,7 +63,7 @@ void Emitter::update()
     {
         p.dir += gravity*dt*0.5f;
         p.pos += p.dir * dt;
-        p.size += Random::randomPositiveFloat(0.05f);
+        p.size += Random::randomPositiveFloat(0.5f);
         if(++p.life >= p.maxLife || p.pos.m_y <= 0.0f)
         {
             resetParticle(p);
@@ -71,18 +73,33 @@ void Emitter::update()
 
 void Emitter::render() const
 {
-    auto view = ngl::lookAt({5,15,25},{0,0,0},{0,1,0});
+    auto view = ngl::lookAt({5,15,25}, {0,0,0}, {0,1,0});
     auto project = ngl::perspective(45.0f, 1.0f, 0.1f, 200.0f);
-    ngl::Mat4 model;
-    for(auto p : m_particles)
-    {
+    ngl::ShaderLib::setUniform("MVP", project*view);
+    //ngl::ShaderLib::setUniform("colour", 1.0f,0.0f,0.0f);
+    //glPointSize(10);
+    m_vao->bind();
+    m_vao->setData(ngl::SimpleVAO::VertexData(m_particles.size()*sizeof(Particle), m_particles[0].pos.m_x));
+    m_vao->setVertexAttributePointer(0, 3, GL_FLOAT, sizeof(Particle), 0);
+    m_vao->setVertexAttributePointer(1, 3, GL_FLOAT, sizeof(Particle), 6); // 6 -> colour in Particle.h is the third Vec3 -> 012 345 >678
+    m_vao->setVertexAttributePointer(2, 1, GL_FLOAT, sizeof(Particle), 9);
+
+    m_vao->setNumIndices(m_particles.size());
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    m_vao->draw();
+    glDisable(GL_PROGRAM_POINT_SIZE);
+    m_vao->unbind();
+
+    //ngl::Mat4 model;
+    //for(auto p : m_particles)
+    //{
         //std::cout << p.pos.m_x << ", " << p.pos.m_y << ", " << p.pos.m_z << ' ';
         //std::cout << p.dir.m_x << ", " << p.dir.m_y << ", " << p.dir.m_z << "\n";
-        model.translate(p.pos.m_x, p.pos.m_y, p.pos.m_z);
-        ngl::ShaderLib::setUniform("MVP", project*view*model);
-        ngl::ShaderLib::setUniform("colour", p.colour.m_r, p.colour.m_g, p.colour.m_b);
-        ngl::VAOPrimitives::draw("sphere");
-    }
+    //    model.translate(p.pos.m_x, p.pos.m_y, p.pos.m_z);
+    //    ngl::ShaderLib::setUniform("MVP", project*view*model);
+    //    ngl::ShaderLib::setUniform("colour", p.colour.m_r, p.colour.m_g, p.colour.m_b);
+    //    ngl::VAOPrimitives::draw("sphere");
+    //}
 }
 
 void Emitter::saveFrame(int _frameNo) const
