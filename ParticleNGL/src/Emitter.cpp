@@ -63,7 +63,7 @@ void Emitter::update()
     {
         p.dir += gravity*dt*0.5f;
         p.pos += p.dir * dt;
-        p.size += Random::randomPositiveFloat(0.5f);
+        p.size += Random::randomPositiveFloat(0.5);
         if(++p.life >= p.maxLife || p.pos.m_y <= 0.0f)
         {
             resetParticle(p);
