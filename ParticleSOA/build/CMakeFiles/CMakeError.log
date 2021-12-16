@@ -1,0 +1,61 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/opt/rh/devtoolset-9/root/usr/bin/gmake cmTC_b2fe5/fast && /opt/rh/devtoolset-9/root/usr/bin/gmake  -f CMakeFiles/cmTC_b2fe5.dir/build.make CMakeFiles/cmTC_b2fe5.dir/build
+gmake[1]: Entering directory '/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b2fe5.dir/src.c.o
+/opt/rh/devtoolset-9/root/usr/bin/x86_64-redhat-linux-gcc-9   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_b2fe5.dir/src.c.o   -c /home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_b2fe5
+/usr/bin/cmake3 -E cmake_link_script CMakeFiles/cmTC_b2fe5.dir/link.txt --verbose=1
+/opt/rh/devtoolset-9/root/usr/bin/x86_64-redhat-linux-gcc-9  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_b2fe5.dir/src.c.o  -o cmTC_b2fe5 
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: CMakeFiles/cmTC_b2fe5.dir/src.c.o: in function `main':
+src.c:(.text+0x2d): undefined reference to `pthread_create'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x39): undefined reference to `pthread_detach'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x45): undefined reference to `pthread_cancel'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x56): undefined reference to `pthread_join'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x6a): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [CMakeFiles/cmTC_b2fe5.dir/build.make:107: cmTC_b2fe5] Error 1
+gmake[1]: Leaving directory '/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:141: cmTC_b2fe5/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/opt/rh/devtoolset-9/root/usr/bin/gmake cmTC_bbb6f/fast && /opt/rh/devtoolset-9/root/usr/bin/gmake  -f CMakeFiles/cmTC_bbb6f.dir/build.make CMakeFiles/cmTC_bbb6f.dir/build
+gmake[1]: Entering directory '/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_bbb6f.dir/CheckFunctionExists.c.o
+/opt/rh/devtoolset-9/root/usr/bin/x86_64-redhat-linux-gcc-9   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_bbb6f.dir/CheckFunctionExists.c.o   -c /usr/share/cmake3/Modules/CheckFunctionExists.c
+Linking C executable cmTC_bbb6f
+/usr/bin/cmake3 -E cmake_link_script CMakeFiles/cmTC_bbb6f.dir/link.txt --verbose=1
+/opt/rh/devtoolset-9/root/usr/bin/x86_64-redhat-linux-gcc-9  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_bbb6f.dir/CheckFunctionExists.c.o  -o cmTC_bbb6f  -lpthreads 
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [CMakeFiles/cmTC_bbb6f.dir/build.make:107: cmTC_bbb6f] Error 1
+gmake[1]: Leaving directory '/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:141: cmTC_bbb6f/fast] Error 2
+
+
+

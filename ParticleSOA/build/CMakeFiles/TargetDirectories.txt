@@ -1,0 +1,5 @@
+/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/rebuild_cache.dir
+/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/edit_cache.dir
+/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/ParticleSOACopyShaders.dir
+/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/ParticleSOA.dir
+/home/s5400029/Desktop/ASE/labexercises-tya41/ParticleSOA/build/CMakeFiles/ParticleSOA_autogen.dir
